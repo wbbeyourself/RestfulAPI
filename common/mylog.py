@@ -8,7 +8,9 @@ import logging
 import os
 import re
 import time
-from common import config
+import simplejson as json
+import datetime
+from common import config, date_tools
 from logging.handlers import RotatingFileHandler
 from logging.handlers import TimedRotatingFileHandler
 
@@ -47,6 +49,32 @@ def get_roll_logger(log_file='restful_roll.log'):
     log_obj.addHandler(TimeRthandler)
     log_obj.setLevel(logging.DEBUG)
     return log_obj
+
+
+logger = get_roll_logger()
+
+
+def is_stamp(stamp):
+    if not isinstance(stamp, int):
+        return False
+    s = int(time.mktime(datetime.date(2017, 1, 1).timetuple()))  # 1483200000
+    e = int(time.mktime(datetime.date(2117, 12, 30).timetuple()))  # 1609257600
+    if s <= stamp <= e:
+        return True
+    else:
+        return False
+
+
+def dict2log(dic):
+    if not isinstance(dic, dict):
+        return None
+    js = {}
+    for k, v in dic.items():
+        if 'time' in str(k) and is_stamp(v):
+            js[k] = date_tools.stamp2datetime(v)
+        else:
+            js[k] = v
+    return json.dumps(js, encoding='UTF-8', ensure_ascii=False, indent=2)
 
 
 if __name__ == '__main__':

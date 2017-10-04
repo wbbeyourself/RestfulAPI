@@ -5,6 +5,7 @@
 """
 
 from flask import Flask, jsonify, abort, make_response, request
+from common.decorator import call_log
 
 app = Flask(__name__)
 
@@ -30,11 +31,13 @@ def not_found(error):
 
 
 @app.route('/')
+@call_log
 def index():
     return "Hello, World!"
 
 
 @app.route('/todo/api/v1.0/tasks', methods=['GET', 'POST'])
+@call_log
 def get_tasks():
     if request.method == 'GET':
         return jsonify({'tasks': tasks})
@@ -52,10 +55,9 @@ def get_tasks():
 
 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
+@call_log
 def get_task(task_id):
     task = [t for t in tasks if t['id'] == task_id]
     if len(task) == 0:
         abort(404)
     return jsonify({'task': task[0]})
-
-
