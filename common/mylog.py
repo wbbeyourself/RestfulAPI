@@ -5,6 +5,7 @@
 """
 
 import logging
+import os
 import re
 import time
 from common import config
@@ -18,7 +19,11 @@ def get_maxsize_logger(log_file='restful.log'):
     global formatter
     log_obj = logging.getLogger('Restful')
 
-    Rthandler = RotatingFileHandler(filename=config.log_path + log_file,
+    filename = os.path.join(config.log_path, log_file)
+    with open(filename, 'a'):
+        pass
+
+    Rthandler = RotatingFileHandler(filename=filename,
                                     maxBytes=20 * 1024 * 1024, backupCount=20)
     Rthandler.setFormatter(formatter)
     log_obj.addHandler(Rthandler)
@@ -29,7 +34,11 @@ def get_maxsize_logger(log_file='restful.log'):
 
 
 def get_roll_logger(log_file='restful_roll.log'):
-    TimeRthandler = TimedRotatingFileHandler(filename=config.log_path + log_file, when="d", interval=1, backupCount=3)
+    filename = os.path.join(config.log_path, log_file)
+    with open(filename, 'a'):
+        pass
+
+    TimeRthandler = TimedRotatingFileHandler(filename=filename, when="d", interval=1, backupCount=3)
     TimeRthandler.suffix = "%Y%m%d"
     TimeRthandler.extMatch = re.compile(r"^\d{4}\d{2}\d{2}$")
     formatter = logging.Formatter('%(asctime)s %(filename)s:%(lineno)d %(levelname)-8s %(message)s')
